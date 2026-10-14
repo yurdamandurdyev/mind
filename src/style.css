@@ -1993,3 +1993,126 @@ footer > span:last-child {
     animation: none;
   }
 }
+/* Luminous lateral neural network, matching the reference's blue light fibers. */
+.neural-stage {
+  background:
+    radial-gradient(ellipse at 50% 45%, #14275188, transparent 70%), #080e1b;
+  border-color: #2b3f5b;
+}
+.neural-stage.expanded {
+  background: #080e1b;
+}
+.neural-stage::before {
+  opacity: 0.35;
+}
+.holographic .brain-scene {
+  isolation: isolate;
+}
+.brain-surface.holographic {
+  padding-top: 36px;
+  padding-bottom: 20px;
+}
+.holographic .brain-caption {
+  color: #8da8ca;
+}
+.holographic .neuron-label {
+  color: #e7f5ff;
+  background: #091426db;
+  border-color: #8fceff55;
+  box-shadow: 0 1px 10px #080e28aa;
+}
+.holographic .neuron.selected .neuron-label {
+  background: #143351;
+  border-color: #b4edff;
+}
+.holographic .neuron-core {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.holographic .neuron-core > span {
+  background: #fff;
+  box-shadow: 0 0 8px #a5efff;
+}
+.holographic .neuron:hover .neuron-core,
+.holographic .neuron.selected .neuron-core {
+  box-shadow: 0 0 14px #9ce7ff;
+}
+.fiber-sway {
+  animation: fiber-drift var(--sway-duration, 10s) ease-in-out
+    var(--fiber-delay, 0s) infinite alternate;
+  transform-origin: 380px 270px;
+}
+.fiber-current {
+  animation: fiber-travel var(--flow-duration, 4s) linear var(--fiber-delay, 0s)
+    infinite;
+}
+.neuron-flare {
+  animation: flare-breathe 5s ease-in-out var(--fiber-delay, 0s) infinite
+    alternate;
+}
+@keyframes fiber-drift {
+  from {
+    transform: translate(-0.9px, 0.7px);
+    opacity: 0.65;
+  }
+  to {
+    transform: translate(1.1px, -0.8px);
+    opacity: 1;
+  }
+}
+@keyframes fiber-travel {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+@keyframes flare-breathe {
+  from {
+    transform: scale(0.8);
+    opacity: 0.65;
+  }
+  to {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+[data-motion="paused"] .fiber-sway,
+[data-motion="paused"] .fiber-current,
+[data-motion="paused"] .neuron-flare {
+  animation-play-state: paused;
+}
+.neural-stage .stage-heading > span,
+.neural-stage .stage-stats,
+.neural-stage .graph-controls button {
+  color: #a3c8e8;
+}
+.neural-stage .stage-heading i {
+  background: #a1eeff;
+  box-shadow: 0 0 8px #63cfff;
+}
+.neural-stage .stage-mode {
+  color: #b9e4ff;
+  border-color: #446581;
+  background: #12253c88;
+}
+.neural-stage .stage-bottom {
+  border-color: #293d55;
+}
+@media (max-width: 520px) {
+  .brain-surface.holographic {
+    height: 410px;
+    padding-top: 42px;
+    padding-bottom: 25px;
+  }
+  .holographic .neuron-label {
+    font-size: 17px;
+    line-height: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fiber-sway,
+  .fiber-current,
+  .neuron-flare {
+    animation: none;
+  }
+}

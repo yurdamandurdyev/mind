@@ -1,88 +1,140 @@
 import { memo, useEffect, useId, useRef, useState } from "react";
 import {
   BRAIN_VIEWBOX,
-  HEMISPHERE,
-  SULCI,
+  BRAIN_OUTLINE,
+  FIBERS,
   NODES_PER_PAGE,
   nodePosition,
 } from "./brainGeometry.js";
 
-const Anatomy = memo(function Anatomy({ prefix }) {
+const Hologram = memo(function Hologram({ prefix }) {
   return (
     <>
       <defs>
-        <radialGradient id={`${prefix}-tissue`} cx="42%" cy="35%" r="70%">
-          <stop offset="0" stopColor="#71958b" />
-          <stop offset=".42" stopColor="#466d64" />
-          <stop offset=".8" stopColor="#294b43" />
-          <stop offset="1" stopColor="#152f29" />
+        <radialGradient id={`${prefix}-volume`} cx="42%" cy="38%" r="66%">
+          <stop offset="0" stopColor="#204b9c" stopOpacity=".22" />
+          <stop offset=".65" stopColor="#347bd1" stopOpacity=".12" />
+          <stop offset="1" stopColor="#86eaff" stopOpacity=".25" />
         </radialGradient>
-        <linearGradient id={`${prefix}-ridge`} x1="0" y1="0" x2="1" y2="1">
-          <stop stopColor="#ccdfcc" stopOpacity=".65" />
-          <stop offset=".45" stopColor="#8eafa0" stopOpacity=".45" />
-          <stop offset="1" stopColor="#33564b" stopOpacity=".4" />
-        </linearGradient>
+        <radialGradient id={`${prefix}-aura`}>
+          <stop stopColor="#7ddcff" stopOpacity=".28" />
+          <stop offset=".6" stopColor="#5272ff" stopOpacity=".08" />
+          <stop offset="1" stopColor="#5272ff" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={`${prefix}-star`}>
+          <stop offset="0" stopColor="#fff" />
+          <stop offset=".12" stopColor="#e9faff" stopOpacity=".98" />
+          <stop offset=".26" stopColor="#8ce4ff" stopOpacity=".75" />
+          <stop offset=".55" stopColor="#8990ff" stopOpacity=".3" />
+          <stop offset="1" stopColor="#bc8cff" stopOpacity="0" />
+        </radialGradient>
         <clipPath id={`${prefix}-clip`}>
-          <path d={HEMISPHERE} />
-          <path d={HEMISPHERE} transform="translate(600 0) scale(-1 1)" />
+          <path d={BRAIN_OUTLINE} />
         </clipPath>
       </defs>
       <g className="brain-anatomy" aria-hidden="true">
-        {[false, true].map((mirror) => (
-          <g
-            key={String(mirror)}
-            transform={mirror ? "translate(600 0) scale(-1 1)" : undefined}
-          >
-            <path
-              d={HEMISPHERE}
-              fill="#000"
-              opacity=".3"
-              transform="translate(0 6)"
-            />
-            <path
-              d={HEMISPHERE}
-              fill={`url(#${prefix}-tissue)`}
-              stroke="#a9c7b5"
-              strokeWidth="1.3"
-            />
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-              {/* Broad ridges give the gyri volume; dark grooves remain recessed. */}
-              {SULCI.map((d, i) => (
-                <g key={i}>
-                  <path d={d} stroke="#1b342e" strokeWidth="13" opacity=".65" />
-                  <path
-                    d={d}
-                    stroke={`url(#${prefix}-ridge)`}
-                    strokeWidth="8"
-                    transform="translate(-3 -3)"
-                  />
-                  <path d={d} stroke="#102923" strokeWidth="3.5" />
-                  <path
-                    d={d}
-                    stroke="#203f35"
-                    strokeWidth="1"
-                    transform="translate(1 1)"
-                  />
-                </g>
-              ))}
-            </g>
-            <path
-              d={HEMISPHERE}
-              fill="none"
-              stroke="#c0d6bc"
-              strokeWidth="3"
-              strokeOpacity=".22"
-              transform="translate(-1 -1)"
-            />
-          </g>
-        ))}
-        <path
-          d="M 300,40 C 304,110 296,160 302,210 S 295,315 302,370 S 297,457 300,505"
-          fill="none"
-          stroke="#9bbf9e"
-          strokeOpacity=".35"
-          strokeWidth="1"
+        <ellipse
+          cx="380"
+          cy="285"
+          rx="365"
+          ry="280"
+          fill={`url(#${prefix}-aura)`}
         />
+        <path
+          d={BRAIN_OUTLINE}
+          fill={`url(#${prefix}-volume)`}
+          stroke="#8bddff"
+          strokeOpacity=".18"
+          strokeWidth="9"
+        />
+        <path
+          d={BRAIN_OUTLINE}
+          fill="none"
+          stroke="#a2f0ff"
+          strokeOpacity=".75"
+          strokeWidth="1.3"
+        />
+        <g clipPath={`url(#${prefix}-clip)`}>
+          {FIBERS.bundles.map((d, i) => (
+            <g key={i} className="fiber-bundle">
+              <g
+                className="fiber-sway"
+                style={{
+                  "--sway-duration": `${8 + (i % 7)}s`,
+                  "--fiber-delay": `${-i * 0.71}s`,
+                }}
+              >
+                <path
+                  className="fiber-halo"
+                  d={d}
+                  fill="none"
+                  stroke="#528cff"
+                  strokeWidth="3"
+                  opacity=".16"
+                />
+                <path
+                  className="fiber-thread"
+                  d={d}
+                  fill="none"
+                  stroke={i % 3 === 0 ? "#beabff" : "#7ddaff"}
+                  strokeWidth=".65"
+                  opacity=".58"
+                />
+                <path
+                  className="neural-impulse fiber-current"
+                  d={d}
+                  fill="none"
+                  stroke="#c1f4ff"
+                  strokeWidth=".9"
+                  strokeDasharray="3 29"
+                  style={{
+                    "--flow-duration": `${3 + (i % 5) * 0.6}s`,
+                    "--fiber-delay": `${-i * 0.61}s`,
+                  }}
+                />
+              </g>
+            </g>
+          ))}
+          {FIBERS.points.map(([x, y], i) => (
+            <circle
+              key={i}
+              cx={x}
+              cy={y}
+              r={i % 4 === 0 ? 1.6 : 0.8}
+              fill="#c4f7ff"
+              opacity={i % 4 === 0 ? 0.9 : 0.4}
+            />
+          ))}
+          {/* Curved cortical and cerebellar strands retain the anatomical profile. */}
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <path
+              key={i}
+              d={BRAIN_OUTLINE}
+              transform={`translate(${380 * i * 0.018} ${275 * i * 0.018}) scale(${1 - i * 0.018})`}
+              fill="none"
+              stroke="#88ddff"
+              strokeWidth=".6"
+              opacity=".25"
+            />
+          ))}
+          <path
+            d="M 639 326 C 583 327 568 385 501 393 C 448 405 427 376 381 379 C 326 391 259 365 239 331"
+            fill="none"
+            stroke="#a5beff"
+            strokeWidth="1.3"
+            opacity=".5"
+          />
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <path
+              key={i}
+              d={`M ${520 + i * 2} ${405 + i * 5} Q ${585 + i * 3} ${380 + i * 10} ${650 - i * 3} ${385 + i * 8}`}
+              fill="none"
+              stroke="#98c9ff"
+              strokeWidth=".8"
+              opacity=".5"
+            />
+          ))}
+        </g>
       </g>
     </>
   );
@@ -133,17 +185,17 @@ export default memo(function BrainGraph({
 
   return (
     <div
-      className="brain-surface anatomical"
+      className="brain-surface anatomical holographic"
       ref={surfaceRef}
       data-motion={paused || !visible ? "paused" : "playing"}
     >
       <svg
         className="brain-scene"
         viewBox={`0 0 ${BRAIN_VIEWBOX.width} ${BRAIN_VIEWBOX.height}`}
-        aria-label="Мозг: вид сверху, два полушария с извилинами"
+        aria-label="Светящийся нейронный мозг: вид сбоку"
         style={{ transform: `scale(${zoom})` }}
       >
-        <Anatomy prefix={prefix} />
+        <Hologram prefix={prefix} />
         <g
           className="brain-connections"
           clipPath={`url(#${prefix}-clip)`}
@@ -152,7 +204,7 @@ export default memo(function BrainGraph({
           {shown.map((sphere, i) => {
             const [x, y] = nodePosition(i),
               [nx, ny] = nodePosition((i + 2) % shown.length);
-            const curve = `M ${x} ${y - 8} Q ${300 + (i % 2 ? 40 : -40)} ${(y + ny) / 2} ${nx} ${ny - 8}`;
+            const curve = `M ${x} ${y - 8} Q ${380 + (i % 2 ? 40 : -40)} ${(y + ny) / 2} ${nx} ${ny - 8}`;
             return (
               <g key={sphere.id}>
                 <path
@@ -162,18 +214,47 @@ export default memo(function BrainGraph({
                   strokeWidth={selected === sphere.id ? 2 : 1}
                   opacity={selected === sphere.id ? 0.9 : 0.3}
                 />
-                {i < 3 && (
+                {
                   <path
                     className="neural-impulse"
                     d={curve}
                     fill="none"
-                    stroke="#eeffd3"
+                    stroke="#d5f8ff"
                     strokeWidth="2"
                     pathLength="100"
                     strokeDasharray="2 98"
                     style={{ animationDelay: `${-i * 2}s` }}
                   />
-                )}
+                }
+              </g>
+            );
+          })}
+        </g>
+        <g
+          className="neuron-stars"
+          clipPath={`url(#${prefix}-clip)`}
+          aria-hidden="true"
+        >
+          {shown.map((sphere, i) => {
+            const [x, y] = nodePosition(i);
+            return (
+              <g key={sphere.id} transform={`translate(${x} ${y - 10})`}>
+                <g
+                  className="neuron-flare"
+                  style={{ "--fiber-delay": `${-i * 0.7}s` }}
+                >
+                  <circle
+                    r={selected === sphere.id ? 54 : 42}
+                    fill={`url(#${prefix}-star)`}
+                  />
+                  <path
+                    d="M -17,0 H 17 M 0,-17 V 17"
+                    stroke="#beeaff"
+                    strokeWidth=".7"
+                    opacity=".6"
+                  />
+                  <circle r="2.4" fill="#fff" />
+                </g>
               </g>
             );
           })}

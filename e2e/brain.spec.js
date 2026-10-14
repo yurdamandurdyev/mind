@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { HEMISPHERE } from "../src/components/brainGeometry.js";
+import { BRAIN_OUTLINE } from "../src/components/brainGeometry.js";
 import { KEY, seed } from "../src/data.js";
 
 async function labelsOutsideBrain(page) {
@@ -8,9 +8,7 @@ async function labelsOutsideBrain(page) {
     const inverse = svg.getScreenCTM().inverse();
     const path = new Path2D(outline);
     const ctx = document.createElement("canvas").getContext("2d");
-    const contains = (point) =>
-      ctx.isPointInPath(path, point.x, point.y) ||
-      ctx.isPointInPath(path, 600 - point.x, point.y);
+    const contains = (point) => ctx.isPointInPath(path, point.x, point.y);
     return [...document.querySelectorAll(".brain-scene .neuron-label")]
       .filter((label) => {
         const r = label.getBoundingClientRect();
@@ -24,7 +22,7 @@ async function labelsOutsideBrain(page) {
         );
       })
       .map((label) => label.textContent);
-  }, HEMISPHERE);
+  }, BRAIN_OUTLINE);
 }
 
 test("all labels stay inside brain tissue on desktop, phone, and zoomed views", async ({
@@ -113,4 +111,58 @@ test("animation pauses explicitly, when hidden, and for reduced motion", async (
     .click();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(impulse).toHaveCSS("animation-name", "none");
+});
+
+test("every fiber bundle and category link has live moving light, and pause freezes it", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const bundles = page.locator(".fiber-bundle");
+  await expect(bundles).toHaveCount(12);
+  for (const bundle of await bundles.all()) {
+    await expect(bundle.locator(".fiber-halo")).toHaveCount(1);
+    await expect(bundle.locator(".fiber-thread")).toHaveCount(1);
+    await expect(bundle.locator(".fiber-current")).toHaveCSS(
+      "animation-play-state",
+      "running",
+    );
+    await expect(bundle.locator(".fiber-sway")).toHaveCSS(
+      "animation-play-state",
+      "running",
+    );
+  }
+  await expect(page.locator(".brain-connections .neural-impulse")).toHaveCount(
+    11,
+  );
+  const pulse = page.locator(".fiber-current").first();
+  const offset = await pulse.evaluate(
+    (el) => getComputedStyle(el).strokeDashoffset,
+  );
+  await expect
+    .poll(() => pulse.evaluate((el) => getComputedStyle(el).strokeDashoffset))
+    .not.toBe(offset);
+  const sway = page.locator(".fiber-sway").first();
+  const transform = await sway.evaluate((el) => getComputedStyle(el).transform);
+  await expect
+    .poll(() => sway.evaluate((el) => getComputedStyle(el).transform))
+    .not.toBe(transform);
+  await page
+    .getByRole("button", { name: "Приостановить анимацию", exact: true })
+    .click();
+  const animations = page.locator(
+    ".fiber-sway, .neural-impulse, .neuron-flare",
+  );
+  expect(
+    await animations.evaluateAll((elements) =>
+      elements.every(
+        (el) => getComputedStyle(el).animationPlayState === "paused",
+      ),
+    ),
+  ).toBe(true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(
+    await animations.evaluateAll((elements) =>
+      elements.every((el) => getComputedStyle(el).animationName === "none"),
+    ),
+  ).toBe(true);
 });
