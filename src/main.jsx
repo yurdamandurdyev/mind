@@ -9,7 +9,11 @@ createRoot(document.getElementById("root")).render(
   </React.StrictMode>,
 );
 
-if ("serviceWorker" in navigator) {
+if (
+  import.meta.env.VITE_STANDALONE !== "true" &&
+  location.protocol !== "file:" &&
+  "serviceWorker" in navigator
+) {
   if (import.meta.env.PROD) {
     window.addEventListener("load", () => {
       navigator.serviceWorker

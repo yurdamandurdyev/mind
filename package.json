@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "start": "npm run dev",
-    "build": "vite build && node scripts/build-sw.mjs",
+    "build": "vite build && node scripts/build-sw.mjs && npm run build:standalone",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
     "test": "node --test test/*.test.js",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:standalone": "node scripts/build-standalone.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.57.0",
