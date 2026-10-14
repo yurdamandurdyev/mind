@@ -1854,3 +1854,142 @@ footer > span:last-child {
     scroll-behavior: auto !important;
   }
 }
+/* The tissue, nerves, labels and hit areas now share one SVG coordinate system. */
+.brain-surface.anatomical {
+  height: 555px;
+  padding: 46px 10px 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.brain-scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: center;
+  transition: transform 0.18s ease-out;
+}
+.brain-scene .neuron {
+  position: static;
+  transform: none;
+  width: 134px;
+  height: 50px;
+  min-height: 0;
+  padding: 1px 8px;
+  gap: 2px;
+  justify-content: center;
+}
+.brain-scene .neuron:active {
+  transform: none;
+}
+.brain-scene .neuron-core {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  background: #10251c;
+  box-shadow: 0 0 9px var(--node-color);
+}
+.brain-scene .neuron-core > span {
+  width: 5px;
+  height: 5px;
+}
+.brain-scene .neuron-label {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  color: #f2f6e7;
+  background: #0d201be8;
+  border: 1px solid #b5d2b760;
+  border-radius: 4px;
+  max-width: 128px;
+  padding: 3px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 4px #0005;
+}
+.brain-scene .neuron.selected .neuron-label {
+  background: #102a1f;
+  border-color: var(--node-color);
+}
+.brain-scene .neuron:hover .neuron-core,
+.brain-scene .neuron.selected .neuron-core {
+  transform: none;
+  box-shadow:
+    0 0 10px var(--node-color),
+    0 0 0 3px #d2ead92b;
+}
+.neural-impulse {
+  animation: neural-flow 7s linear infinite;
+}
+@keyframes neural-flow {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+[data-motion="paused"] .neural-impulse {
+  animation-play-state: paused;
+}
+.anatomical .brain-floor {
+  display: none;
+}
+.anatomical .brain-caption {
+  bottom: 26px;
+  font-size: 7px;
+}
+.brain-pagination {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  background: #121c13;
+  border: 1px solid #3b5133;
+  border-radius: 5px;
+  z-index: 4;
+  padding: 3px 5px;
+}
+.brain-pagination button {
+  padding: 5px 8px;
+}
+.brain-pagination button:disabled {
+  opacity: 0.3;
+}
+@media (max-width: 520px) {
+  .brain-surface.anatomical {
+    height: 435px;
+    padding: 48px 0 38px;
+  }
+  .brain-scene .neuron-label {
+    font-size: 16px;
+    line-height: 20px;
+    padding: 2px 5px;
+  }
+  .brain-scene .neuron {
+    gap: 1px;
+    padding: 0;
+  }
+  .anatomical .brain-caption {
+    font-size: 5px;
+    bottom: 26px;
+    letter-spacing: 0.6px;
+  }
+  .brain-pagination {
+    bottom: 3px;
+    right: 5px;
+    font-size: 9px;
+  }
+}
+.neural-stage.expanded .brain-surface.anatomical {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .neural-impulse {
+    animation: none;
+  }
+}
